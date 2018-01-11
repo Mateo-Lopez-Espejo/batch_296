@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy
+from mpl_toolkits.mplot3d import Axes3D
 
 '''
 Relates the measured SI as a function of Tau and U. the compares the goodness of fit across different instances of SI
@@ -90,16 +91,18 @@ def SI_prediction(Tau, U, SI, plot=True):
 
 ################################################################
 # plot of subset of cells with all possible model combinations
-subsetDF = jl.load('/home/mateo/ssa_analisis/SSA_batch_296/171117_6model_all_eval_DF')
+# this excludes cells with only jitter on or off.
+subsetDF = jl.load('/home/mateo/batch_296/171117_6model_all_eval_DF')
 DF = subsetDF.copy()
 
 stream = ['cell', 'mean']
 jitter = 'Off'
 fit_set = 'all' # 'all', 'Jitter Off', 'Jitter On'
 eval_set = 'all'
-act_pred = 'predicted'
+act_pred = 'actual'
 
 goodcells = filterdf(in_DF=subsetDF)
+possitivecells = DF.loc[(DF['values']>0),:].cellid.unique().tolist()
 
 filtered = DF.loc[((DF.Jitter == jitter) | (pd.isnull(DF.Jitter))) &
                   (DF.fit_mask == fit_set) &
@@ -107,6 +110,7 @@ filtered = DF.loc[((DF.Jitter == jitter) | (pd.isnull(DF.Jitter))) &
                   (DF.order == 'stp1pc first') &
                   ((DF.act_pred == act_pred) | (pd.isnull(DF.act_pred))) &
                   (DF.cellid.isin(goodcells)) &
+                  (DF.cellid.isin(possitivecells)) &
                   (DF.parameter.isin(['Tau', 'U', 'SI']))&
                   (DF.stream.isin(stream)), :].drop_duplicates(['parameter','cellid'])
 pivoted = filtered.pivot(index='cellid',columns='parameter', values='values')
@@ -126,7 +130,7 @@ fig.suptitle('batch 296, fit {}, eval {}, Jitter {} \n SI of {} response'.format
 # plot of old DF only including full file fitting and evaluation
 # be carefull for some reason there are small discrepancies between this DF (fitted locally) and later DF
 # imported from the lab DB.
-fullOldDF = jl.load('/home/mateo/ssa_analisis/SSA_batch_296/171113_refreshed_full_batch_DF')
+fullOldDF = jl.load('/home/mateo/batch_296/171113_refreshed_full_batch_DF')
 DF = fullOldDF.copy()
 
 stream = ['cell', 'mean']
