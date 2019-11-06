@@ -134,7 +134,7 @@ def splot_v5(cellid):
     m = stack.modules[del_idx]
     nu_blocks = len(stack.modules[0].d_out)
 
-    for bb, ap in itt.product(range(nu_blocks), ['actual']):  # todo add predicted for the real deal i.e. whole stack.
+    for bb, ap in itt.product(range(nu_blocks), ['actual']):  # todo add predicted for the whole stack.
         folded_resp = m.folded_resp[bb]
         spont = m.resp_spont[bb]
         filestate = stack.modules[0].d_out[bb]['filestate']
@@ -200,7 +200,7 @@ def splot_v5(cellid):
         x_ax = resp_dict['stream0Std'].shape[0]
         fs = m.d_out[bb]['respFs']
         period = 1 / fs
-        t = np.arange(0, stream0.shape[1] * period, period)
+            t = np.arange(0, stream0.shape[1] * period, period)
 
         keys = ['stream0Std', 'stream0Dev', 'stream1Std', 'stream1Dev', 'spont']
         colors = ['C0', 'C0', 'C1', 'C1', 'black']
